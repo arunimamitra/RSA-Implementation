@@ -88,7 +88,7 @@ public class RSA_Implementation {
         PrivateKey privateKey=null;
         try{
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(2048);
+            keyPairGenerator.initialize(4096); // 512-low, 1024-medium, 2048-high, 4096-very high
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
             publicKey = keyPair.getPublic();
             privateKey = keyPair.getPrivate();
