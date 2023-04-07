@@ -1,11 +1,11 @@
 package Assignment9;
 
-        import java.io.IOException;
-        import java.math.BigInteger;
+import java.io.IOException;
+import java.math.BigInteger;
 import java.security.*;
 import java.security.spec.InvalidKeySpecException;
-        import java.security.spec.RSAPrivateKeySpec;
-        import java.security.spec.RSAPublicKeySpec;
+import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.util.Scanner;
 import javax.crypto.Cipher;
 
@@ -22,8 +22,7 @@ class Keys{
 }
 public class RSA_Implementation {
 
-    public static void main(String[] args) throws IOException {
-
+    public static void main(String[] args) {
         Scanner sc=new Scanner(System.in);
         try {
             String input;
@@ -33,7 +32,7 @@ public class RSA_Implementation {
             }
             else input =args[0];
 
-            Keys keys = keyGeneration();
+            Assignment9.Keys keys = keyGeneration();
 
             System.out.println("Public Key generated - " + keys.getPublicKey());
             System.out.println("Private Key generated - " + keys.getPrivateKey());
@@ -47,11 +46,17 @@ public class RSA_Implementation {
             System.out.println("Private Key Exponent : " + rsaPairs[3]);
 
 
-            //Encrypt Data using Public Key
-            byte[] encryptedData = encryptData(input, keys.getPublicKey());
+            //Encryption using Public Key
+            System.out.println("\n\n**** Encryption Process ****");
+            System.out.println(" Before encryption, message = " + input);
+            byte[] encryptedData = encryptPlaintext(input, keys.getPublicKey());
+            System.out.println(" After encryption, ciphertext = " + encryptedData);
 
-            //Descypt Data using Private Key
-            decryptData(encryptedData, keys.getPrivateKey());
+
+            //Decryption using Private Key
+            System.out.println("\n\n**** Decryption Process ****");
+            byte[] decrypted = decryptCiphertext(encryptedData, keys.getPrivateKey());
+            System.out.println("Decrypted data = " + new String(decrypted));
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -77,13 +82,13 @@ public class RSA_Implementation {
         return b;
     }
 
-    private static Keys keyGeneration() {
+    private static Assignment9.Keys keyGeneration() {
         System.out.println("Generating Public and Private keys");
         PublicKey publicKey=null;
         PrivateKey privateKey=null;
         try{
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-            keyPairGenerator.initialize(4096);
+            keyPairGenerator.initialize(2048);
             KeyPair keyPair = keyPairGenerator.generateKeyPair();
             publicKey = keyPair.getPublic();
             privateKey = keyPair.getPrivate();
@@ -91,41 +96,33 @@ public class RSA_Implementation {
             System.out.print("Exception!!"+e);
             e.printStackTrace();
         }
-        Keys k =new Keys(publicKey,privateKey);
+        Assignment9.Keys k =new Assignment9.Keys(publicKey,privateKey);
         return k;
     }
 
-    public static byte[] encryptData(String data, PublicKey publicKey) throws IOException {
-        System.out.println("\n----------------ENCRYPTION STARTED------------");
-        System.out.println("Data Before Encryption :" + data);
-        byte[] dataToEncrypt = data.getBytes();
+    public static byte[] encryptPlaintext(String input, PublicKey publicKey){
         byte[] encryptedData = null;
         try {
+            byte[] plaintext = input.getBytes();
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
-            encryptedData = cipher.doFinal(dataToEncrypt);
-            System.out.println("Encryted Data: " + encryptedData);
+            encryptedData = cipher.doFinal(plaintext);
         } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println("----------------ENCRYPTION COMPLETED------------");
         return encryptedData;
     }
 
-    public static void decryptData(byte[] data, PrivateKey privateKey) throws IOException {
-        System.out.println("\n----------------DECRYPTION STARTED------------");
-        byte[] descryptedData = null;
+    public static byte[] decryptCiphertext(byte[] data, PrivateKey privateKey){
+        byte[] decrypt = null;
         try {
             Cipher cipher = Cipher.getInstance("RSA");
             cipher.init(Cipher.DECRYPT_MODE, privateKey);
-            descryptedData = cipher.doFinal(data);
-            System.out.println("Decrypted Data: " + new String(descryptedData));
-
+            decrypt = cipher.doFinal(data);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        System.out.println("----------------DECRYPTION COMPLETED------------");
+        return decrypt;
     }
 
 }
